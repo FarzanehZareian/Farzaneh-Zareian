@@ -198,9 +198,11 @@ st.markdown('***<p style="font-size:26px; color:green;">Prediction of Peak Dynam
 st.sidebar.write('***<p style="color:red;">Acceleration Time History</p>***', unsafe_allow_html=True)
 uploaded_file = st.sidebar.file_uploader('**Please upload an acceleration time history in PEER NGA format.**')
 if uploaded_file is not None:
+    with open(os.path.join("https://github.com/FarzanehZareian/Prediction_of_Dynamic_Response_of_Steel_Moment_Frames",uploaded_file.name),"wb") as f:
+            f.write(uploaded_file.getbuffer())
     sf =st.sidebar.number_input('**Enter a scale factor for the earthquake:**')
     if sf:
-        desc, npts, dt, rec_time, inp_acc = processNGAfile("F:\\mythesis\\mycode2\\App_file\\" + uploaded_file.name, scalefactor=sf)
+        desc, npts, dt, rec_time, inp_acc = processNGAfile(" https://github.com/FarzanehZareian/Prediction_of_Dynamic_Response_of_Steel_Moment_Frames/" + uploaded_file.name, scalefactor=sf)
         st.write("###")
         st.write('*Description of the earthquake*: ',desc)
         st.write("*Total number of points*: ", str(int(npts)))
