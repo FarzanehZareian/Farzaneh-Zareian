@@ -8,6 +8,7 @@ import base64
 from PIL import Image
 import os
 import gmspy as gm
+from io import StringIO
 
 
 img = Image.open('steel_structure.jpg')
@@ -52,7 +53,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-def processNGAfile(filepath, scalefactor=None):
+def processNGAfile(uploaded_file, scalefactor=None):
     '''
     This function process acceleration history for NGA data file (.AT2 format)
     to a single column value and return the total number of data points and 
@@ -74,8 +75,7 @@ def processNGAfile(filepath, scalefactor=None):
     try:
         if not scalefactor:
             scalefactor = 1.0
-        with open(filepath,'r') as f:
-            content = f.readlines()
+        content = StringIO(uploaded_file.getvalue().decode("utf-8"))
         counter = 0
         desc, row4Val, acc_data = "","",[]
         for x in content:
@@ -198,8 +198,7 @@ st.markdown('***<p style="font-size:26px; color:green;">Prediction of Peak Dynam
 st.sidebar.write('***<p style="color:red;">Acceleration Time History</p>***', unsafe_allow_html=True)
 uploaded_file = st.sidebar.file_uploader('**Please upload an acceleration time history in PEER NGA format.**')
 if uploaded_file is not None:
-    # with open(os.path.join("https://github.com/FarzanehZareian/Prediction_of_Dynamic_Response_of_Steel_Moment_Frames",uploaded_file.name),"wb") as f:
-    #         f.write(uploaded_file.getbuffer())
+
     sf =st.sidebar.number_input('**Enter a scale factor for the earthquake:**')
     if sf:
         desc, npts, dt, rec_time, inp_acc = processNGAfile(uploaded_file, scalefactor=sf)
