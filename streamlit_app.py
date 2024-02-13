@@ -309,7 +309,7 @@ if uploaded_file is not None:
                                 return annotated_text("Based on the LightGBM model, **Maximum Interstory Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
                             
                             if target_name =="Base Shear Coefficient (BSC)":
-                                model = load_model('CatBoost_BSC')
+                                model = load_model('LightGBM_BSC')
 
                                 GM = gm.SeismoGM(dt = dt , acc = inp_acc , unit = 'g')
                                 GM.set_units(acc="g", vel="m", disp="m")
