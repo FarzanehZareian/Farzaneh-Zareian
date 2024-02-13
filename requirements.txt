@@ -2,3 +2,4 @@ pycaret==3.2.0
 gmspy==0.0.4
 st-annotated-text==4.0.1
 matplotlib==3.6.0
+catboost==1.2.2
