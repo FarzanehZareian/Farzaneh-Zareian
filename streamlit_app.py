@@ -194,9 +194,9 @@ def SA(acc_rec, T1):
     return SA_T1, SV_T1, SD_T1, VE_T1, AvSA, AvSV, AvSD, AvVE
 
 
-st.markdown('***<p style="font-size:26px; color:green;">Prediction of Peak Dynamic Responses of 2D Steel Moment Frames subjected to Earthquake Ground Motion Records</p>***', unsafe_allow_html=True)
+st.markdown('***<p style="font-size:26px; color:green;">Prediction of Peak Dynamic Responses of 2D Steel Moment Frames Subjected to Earthquake Ground Motion Records</p>***', unsafe_allow_html=True)
 st.sidebar.write('***<p style="color:red;">Acceleration Time History</p>***', unsafe_allow_html=True)
-uploaded_file = st.sidebar.file_uploader('**Please upload an acceleration time history in PEER NGA format.**')
+uploaded_file = st.sidebar.file_uploader('**Please upload an acceleration time history from the PEER NGA database.**')
 if uploaded_file is not None:
 
     sf =st.sidebar.number_input('**Enter a scale factor for the earthquake:**')
@@ -206,11 +206,12 @@ if uploaded_file is not None:
         st.write('*Description of the earthquake*: ',desc)
         st.write("*Total number of points*: ", str(int(npts)))
         st.write('*Time interval*: ',str(dt), 'sec')
-        st.write('*Acceleration data*:')
+        st.write('*Single-column acceleration data*:')
 
         d = {'Time': rec_time, 'Accel.': inp_acc}
         df_acc =  pd.DataFrame(data=d).T
         st.write(df_acc)
+        st.write('*Acceleration time-history graph*:')
         fig = plt.figure(figsize=(8.3,2.3))
         plt.plot(df_acc.T.iloc[:,0], df_acc.T.iloc[:,1], linewidth=1.1, c='lightseagreen')
         plt.xticks(np.arange(0, df_acc.T.iloc[-1,0]+1, 5))
@@ -222,15 +223,15 @@ if uploaded_file is not None:
         check = st.checkbox('Agree')
         if check:
             st.sidebar.write("####")
-            st.sidebar.write('***<p style="color:red;">Structural Properties of your Steel Frame</p>***', unsafe_allow_html=True)
+            st.sidebar.write('***<p style="color:red;">Structural Properties of the Steel Frame</p>***', unsafe_allow_html=True)
             nst = st.sidebar.slider(label = 'Number of stories', min_value = 3, max_value = 13 , value = 8, step = 1)
             nbay = st.sidebar.slider(label = 'Number of bays', min_value = 2, max_value = 5 , value = 3, step = 1)
             lcol = st.sidebar.slider(label = 'Height of the stories (m)', min_value = 3.0, max_value = 4.0 , value = 3.2, step = 0.1)
             lbeam = st.sidebar.slider(label = 'Length of the bays (m)', min_value = 4.0, max_value = 7.0 , value = 6.0, step = 0.1)
             t1 = st.sidebar.number_input('Fundamental period T1 (sec)', value=1.16)
-            mass = st.sidebar.number_input('Total mass of the frame (ton)', value=563.67)
-            keff = st.sidebar.number_input('Effective stiffness of the frame (kN/$m^2$)', value=9407.64)
-            vult = st.sidebar.number_input('Ultimate strength of the frame (kN)', value=2046.71)
+            mass = st.sidebar.number_input('Total mass (ton)', value=563.67)
+            keff = st.sidebar.number_input('Effective stiffness (kN/$m^2$)', value=9407.64)
+            vult = st.sidebar.number_input('Ultimate strength (kN)', value=2046.71)
 
             check2 = st.sidebar.checkbox('Submit')
             if check2:
