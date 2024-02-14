@@ -238,7 +238,7 @@ if uploaded_file is not None:
                 st.markdown('**<p style="font-size:20px; color:red;">OUTPUT:</p>**', unsafe_allow_html=True)
                 with st.form("my_form"):
                     target_name = st.selectbox("**Select your TARGET**", ("None","Maximum Global Drift Ratio (MGDR)", "Maximum Interstory Drift Ratio (MIDR)",
-                                                                              "Base Shear Coefficient (BSC)", "Maximum Floor Acceleration (MFA)")) 
+                                                                          "Base Shear Coefficient (BSC)", "Maximum Floor Acceleration (MFA)")) 
                 
                     submitted = st.form_submit_button("Calculate")
                     if submitted:
@@ -273,7 +273,7 @@ if uploaded_file is not None:
                                     prediction = predict(model, features_df2)
                                     prediction = round(prediction,3)
                                     st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                    return annotated_text("Based on the CatBoost model, the **Maximum Global Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
+                                    return annotated_text("Based on the CatBoost model, the estimated **maximum global drift ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
                             
                                 if target_name =="Maximum Interstory Drift Ratio (MIDR)":
                                     model = load_model('LightGBM_MIDR')
@@ -307,7 +307,7 @@ if uploaded_file is not None:
                                     prediction = predict(model, features_df2)
                                     prediction = round(prediction,3)
                                     st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                    return annotated_text("Based on the LightGBM model, the **Maximum Interstory Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
+                                    return annotated_text("Based on the LightGBM model, the estimated **maximum interstory drift ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
                             
                                 if target_name =="Base Shear Coefficient (BSC)":
                                     model = load_model('LightGBM_BSC')
@@ -338,7 +338,7 @@ if uploaded_file is not None:
                                     prediction = predict(model, features_df2)
                                     prediction = round(prediction,3)
                                     st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                    return annotated_text("Based on the LightGBM model, the **Base Shear Coefficient** of this frame is", (str(prediction), "", "#8ef"))
+                                    return annotated_text("Based on the LightGBM model, the estimated **base shear coefficient** of this frame is", (str(prediction), "", "#8ef"))
 
                                 if target_name =="Maximum Floor Acceleration (MFA)":
                                     model = load_model('LightGBM_MFA')
@@ -371,6 +371,6 @@ if uploaded_file is not None:
                                     prediction = predict(model, features_df2)
                                     prediction = round(prediction,3)
                                     st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                    return annotated_text("Based on the LightGBM model, the **Maximum Floor Acceleration** of this frame is", (str(prediction)+str(' g'), "", "#8ef"))
+                                    return annotated_text("Based on the LightGBM model, the estimated **maximum floor acceleration** of this frame is", (str(prediction)+str(' g'), "", "#8ef"))
 
                         choose_target()
