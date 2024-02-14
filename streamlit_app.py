@@ -273,7 +273,7 @@ if uploaded_file is not None:
                                     prediction = predict(model, features_df2)
                                     prediction = round(prediction,3)
                                     st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                    return annotated_text("Based on the CatBoost model, **Maximum Global Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
+                                    return annotated_text("Based on the CatBoost model, the **Maximum Global Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
                             
                                 if target_name =="Maximum Interstory Drift Ratio (MIDR)":
                                     model = load_model('LightGBM_MIDR')
@@ -307,7 +307,7 @@ if uploaded_file is not None:
                                     prediction = predict(model, features_df2)
                                     prediction = round(prediction,3)
                                     st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                    return annotated_text("Based on the LightGBM model, **Maximum Interstory Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
+                                    return annotated_text("Based on the LightGBM model, the **Maximum Interstory Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
                             
                                 if target_name =="Base Shear Coefficient (BSC)":
                                     model = load_model('LightGBM_BSC')
@@ -338,7 +338,7 @@ if uploaded_file is not None:
                                     prediction = predict(model, features_df2)
                                     prediction = round(prediction,3)
                                     st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                    return annotated_text("Based on the CatBoost model, **Base Shear Coefficient** of this frame is", (str(prediction), "", "#8ef"))
+                                    return annotated_text("Based on the LightGBM model, the **Base Shear Coefficient** of this frame is", (str(prediction), "", "#8ef"))
 
                                 if target_name =="Maximum Floor Acceleration (MFA)":
                                     model = load_model('LightGBM_MFA')
@@ -371,6 +371,6 @@ if uploaded_file is not None:
                                     prediction = predict(model, features_df2)
                                     prediction = round(prediction,3)
                                     st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                    return annotated_text("Based on the LightGBM model, **Maximum Floor Acceleration** of this frame is", (str(prediction)+str(' g'), "", "#8ef"))
+                                    return annotated_text("Based on the LightGBM model, the **Maximum Floor Acceleration** of this frame is", (str(prediction)+str(' g'), "", "#8ef"))
 
                         choose_target()
