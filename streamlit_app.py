@@ -133,9 +133,9 @@ def SA(acc_rec, T1):
     for j in np.arange(len(T)):
         I0 = 1/w[j]**2*(1-np.exp(-xi*w[j]*dt)*(xi*w[j]/wd[j]*np.sin(wd[j]*dt)+np.cos(wd[j]*dt)))
         J0 = 1/w[j]**2*(xi*w[j]+np.exp(-xi*w[j]*dt)*(-xi*w[j]*np.cos(wd[j]*dt)+wd[j]*np.sin(wd[j]*dt)))
-        AA = [[np.exp(-xi*w[j]*dt)*(np.cos(wd[j]*dt)+xi*w[j]/wd[j]*np.sin(wd[j]*dt)) , np.exp(-xi*w[j]*dt)*np.sin(wd[j]*dt)/wd[j] ] , 
-               [-w[j]**2*np.exp(-xi*w[j]*dt)*np.sin(wd[j]*dt)/wd[j] ,np.exp(-xi*w[j]*dt)*(np.cos(wd[j]*dt)-xi*w[j]/wd[j]*np.sin(wd[j]*dt)) ]]
-        BB = [[I0*(1+xi/w[j]/dt)+J0/w[j]**2/dt-1/w[j]**2 , -xi/w[j]/dt*I0-J0/w[j]**2/dt+1/w[j]**2 ] , [J0-(xi*w[j]+1/dt)*I0, I0/dt] ]
+        AA = [[np.exp(-xi*w[j]*dt)*(np.cos(wd[j]*dt)+xi*w[j]/wd[j]*np.sin(wd[j]*dt)), np.exp(-xi*w[j]*dt)*np.sin(wd[j]*dt)/wd[j]], 
+               [-w[j]**2*np.exp(-xi*w[j]*dt)*np.sin(wd[j]*dt)/wd[j], np.exp(-xi*w[j]*dt)*(np.cos(wd[j]*dt)-xi*w[j]/wd[j]*np.sin(wd[j]*dt))]]
+        BB = [[I0*(1+xi/w[j]/dt)+J0/w[j]**2/dt-1/w[j]**2, -xi/w[j]/dt*I0-J0/w[j]**2/dt+1/w[j]**2 ], [J0-(xi*w[j]+1/dt)*I0, I0/dt]]
         
         u1 = np.zeros(len(acc_rec))
         udre1 = np.zeros(len(acc_rec))
@@ -155,7 +155,7 @@ def SA(acc_rec, T1):
             E_I = E_I + dE_I
             EI.append(E_I)        
         VE = (2*E_I)**0.5
-        Equivalent_Velocity = np.append(Equivalent_Velocity,VE)  
+        Equivalent_Velocity = np.append(Equivalent_Velocity, VE)  
         
     T_near_T1 = find_nearest(T, T1)
     T_num = np.where(T == T_near_T1) 
@@ -243,131 +243,134 @@ if uploaded_file is not None:
                     submitted = st.form_submit_button("Calculate")
                     if submitted:
                         def choose_target():
-                            if target_name =="Maximum Global Drift Ratio (MGDR)":
-                                model = load_model('CatBoost_MGDR')
+                            with st.spinner(text="Operation in progress. Please wait..."):
+                                if target_name =="Maximum Global Drift Ratio (MGDR)":
+                                    model = load_model('CatBoost_MGDR')
 
-                                GM = gm.SeismoGM(dt = dt , acc = inp_acc , unit = 'g')
-                                GM.set_units(acc="g", vel="m", disp="m")
+                                    GM = gm.SeismoGM(dt = dt , acc = inp_acc , unit = 'g')
+                                    GM.set_units(acc="g", vel="m", disp="m")
 
-                                sat1 = SA(inp_acc, t1)[0]
-                                svt1 = SA(inp_acc, t1)[1]
-                                sdt1 = SA(inp_acc, t1)[2]
-                                avve = SA(inp_acc, t1)[7]
-                                pga = GM.get_pga()
-                                pgv = GM.get_pgv()
-                                pgd = GM.get_pgd()
-                                IC = GM.get_ic()
+                                    sat1 = SA(inp_acc, t1)[0]
+                                    svt1 = SA(inp_acc, t1)[1]
+                                    sdt1 = SA(inp_acc, t1)[2]
+                                    avve = SA(inp_acc, t1)[7]
+                                    pga = GM.get_pga()
+                                    pgv = GM.get_pgv()
+                                    pgd = GM.get_pgd()
+                                    IC = GM.get_ic()
 
-                                features = {'Lbay (m)':lbeam, 'Sa(T1) (g)':sat1/9.81, 'Sv(T1) (m/s)':svt1, 'Sd(T1) (m)':sdt1, 'AvVE (m/s)':avve, 
-                                            'PGA (g)':pga, 'PGV (m/s)':pgv, 'PGD (m)':pgd, 'IC': IC, 'eff. Stiffness (kN/m^2)':keff, 'ult. Strength (kN)': vult}
+                                    features = {'Lbay (m)':lbeam, 'Sa(T1) (g)':sat1/9.81, 'Sv(T1) (m/s)':svt1, 'Sd(T1) (m)':sdt1, 'AvVE (m/s)':avve, 
+                                                'PGA (g)':pga, 'PGV (m/s)':pgv, 'PGD (m)':pgd, 'IC': IC, 'eff. Stiffness (kN/m^2)':keff,
+                                                'ult. Strength (kN)': vult}
+                                    features_original = {'LBeam':lbeam, 'SA_T1':sat1, 'SV_T1':svt1, 'SD_T1':sdt1, 'AvVE':avve, 'PGA':pga, 'PGV':pgv,
+                                                         'PGD':pgd, 'IC':IC, 'Ke_frame':keff, 'Vult_frame':vult}
                                 
-                                features_original = {'LBeam':lbeam, 'SA_T1':sat1, 'SV_T1':svt1, 'SD_T1':sdt1, 'AvVE':avve, 'PGA':pga, 'PGV':pgv, 'PGD':pgd, 'IC': IC,
-                                                     'Ke_frame':keff, 'Vult_frame':vult}
+                                    features_df = pd.DataFrame([features], index=['Value'])
+                                    features_df2 = pd.DataFrame([features_original], index=['Value'])
                                 
-                                features_df = pd.DataFrame([features], index=['Value'])
-                                features_df2 = pd.DataFrame([features_original], index=['Value'])
-                                
-                                st.write('**<p style="font-size:17.5px; color:#02007c;">Features:</p>**', unsafe_allow_html=True)
-                                st.write(features_df)
-                                prediction = predict(model, features_df2)
-                                prediction = round(prediction,3)
-                                st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                return annotated_text("Based on the CatBoost model, **Maximum Global Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
+                                    st.write('**<p style="font-size:17.5px; color:#02007c;">Features:</p>**', unsafe_allow_html=True)
+                                    st.write(features_df)
+                                    prediction = predict(model, features_df2)
+                                    prediction = round(prediction,3)
+                                    st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
+                                    return annotated_text("Based on the CatBoost model, **Maximum Global Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
                             
-                            if target_name =="Maximum Interstory Drift Ratio (MIDR)":
-                                model = load_model('LightGBM_MIDR')
+                                if target_name =="Maximum Interstory Drift Ratio (MIDR)":
+                                    model = load_model('LightGBM_MIDR')
 
-                                GM = gm.SeismoGM(dt = dt , acc = inp_acc , unit = 'g')
-                                GM.set_units(acc="g", vel="m", disp="m")
+                                    GM = gm.SeismoGM(dt = dt , acc = inp_acc , unit = 'g')
+                                    GM.set_units(acc="g", vel="m", disp="m")
 
-                                svt1 = SA(inp_acc, t1)[1]
-                                sdt1 = SA(inp_acc, t1)[2]
-                                avsa = SA(inp_acc, t1)[4]
-                                avsv = SA(inp_acc, t1)[5]
-                                avsd = SA(inp_acc, t1)[6]
-                                pgd = GM.get_pgd()
-                                pgv = GM.get_pgv()
-                                velRMS = GM.get_rms()[1]
-                                ic = GM.get_ic()
-                                cav = GM.get_cavdi()[0]
+                                    svt1 = SA(inp_acc, t1)[1]
+                                    sdt1 = SA(inp_acc, t1)[2]
+                                    avsa = SA(inp_acc, t1)[4]
+                                    avsv = SA(inp_acc, t1)[5]
+                                    avsd = SA(inp_acc, t1)[6]
+                                    pgd = GM.get_pgd()
+                                    pgv = GM.get_pgv()
+                                    velRMS = GM.get_rms()[1]
+                                    ic = GM.get_ic()
+                                    cav = GM.get_cavdi()[0]
 
+                                    features = {'Nstory':nst, 'Lbay (m)':lbeam, 'T1 (s)':t1, 'Sv(T1) (m/s)':svt1, 'Sd(T1) (m)':sdt1, 'AvSa (g)':avsa/9.81,
+                                                'AvSv (m/s)':avsv, 'AvSd (m)':avsd, 'PGV (m/s)':pgv, 'PGD (m)':pgd,'VelRMS (m/s)':velRMS, 'IC':ic,
+                                                'CAV (m/s)':cav, 'eff. Stiffness (kN/m^2)':keff, 'ult. Strength (kN)': vult}
+                                    features_original = {'NStory':nst, 'LBeam':lbeam, 'T1':t1, 'SV_T1':svt1, 'SD_T1':sdt1, 'AvSA':avsa, 'AvSV':avsv,
+                                                         'AvSD':avsd, 'PGV':pgv, 'PGD':pgd, 'VelRMS':velRMS, 'IC':ic, 'CAV':cav, 'Ke_frame':keff,
+                                                         'Vult_frame':vult}
 
-                                features = {'Nstory':nst, 'Lbay (m)':lbeam, 'T1 (s)':t1, 'Sv(T1) (m/s)':svt1, 'Sd(T1) (m)':sdt1, 'AvSa (g)':avsa/9.81,  'AvSv (m/s)':avsv,
-                                             'AvSd (m)':avsd, 'PGV (m/s)':pgv, 'PGD (m)':pgd, 'VelRMS (m/s)':velRMS, 'IC':ic, 'CAV (m/s)':cav, 'eff. Stiffness (kN/m^2)':keff,
-                                               'ult. Strength (kN)': vult}
-                                features_original = {'NStory':nst, 'LBeam':lbeam, 'T1':t1, 'SV_T1':svt1, 'SD_T1':sdt1, 'AvSA':avsa, 'AvSV':avsv, 'AvSD':avsd, 'PGV':pgv,
-                                                     'PGD':pgd, 'VelRMS':velRMS, 'IC':ic, 'CAV':cav, 'Ke_frame':keff, 'Vult_frame':vult}
-
-                                features_df = pd.DataFrame([features], index=['Value'])
-                                features_df2 = pd.DataFrame([features_original], index=['Value'])
+                                    features_df = pd.DataFrame([features], index=['Value'])
+                                    features_df2 = pd.DataFrame([features_original], index=['Value'])
                                 
-                                st.write('**<p style="font-size:17.5px; color:#02007c;">Features:</p>**', unsafe_allow_html=True)
-                                st.write(features_df)
-                                prediction = predict(model, features_df2)
-                                prediction = round(prediction,3)
-                                st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                return annotated_text("Based on the LightGBM model, **Maximum Interstory Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
+                                    st.write('**<p style="font-size:17.5px; color:#02007c;">Features:</p>**', unsafe_allow_html=True)
+                                    st.write(features_df)
+                                    prediction = predict(model, features_df2)
+                                    prediction = round(prediction,3)
+                                    st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
+                                    return annotated_text("Based on the LightGBM model, **Maximum Interstory Drift Ratio** of this frame is", (str(prediction)+str(' %'), "", "#8ef"))
                             
-                            if target_name =="Base Shear Coefficient (BSC)":
-                                model = load_model('LightGBM_BSC')
+                                if target_name =="Base Shear Coefficient (BSC)":
+                                    model = load_model('LightGBM_BSC')
 
-                                GM = gm.SeismoGM(dt = dt , acc = inp_acc , unit = 'g')
-                                GM.set_units(acc="g", vel="m", disp="m")
+                                    GM = gm.SeismoGM(dt = dt , acc = inp_acc , unit = 'g')
+                                    GM.set_units(acc="g", vel="m", disp="m")
 
-                                sat1 = SA(inp_acc, t1)[0]
-                                vet1 = SA(inp_acc, t1)[3]
-                                avsa = SA(inp_acc, t1)[4]
-                                avsv = SA(inp_acc, t1)[5]
-                                avsd = SA(inp_acc, t1)[6]
-                                pga = GM.get_pga()
-                                pgv = GM.get_pgv()
-                                pgd = GM.get_pgd()
-                                ic = GM.get_ic()
+                                    sat1 = SA(inp_acc, t1)[0]
+                                    vet1 = SA(inp_acc, t1)[3]
+                                    avsa = SA(inp_acc, t1)[4]
+                                    avsv = SA(inp_acc, t1)[5]
+                                    avsd = SA(inp_acc, t1)[6]
+                                    pga = GM.get_pga()
+                                    pgv = GM.get_pgv()
+                                    pgd = GM.get_pgd()
+                                    ic = GM.get_ic()
 
-                                features = {'Lbay (m)': lbeam, 'T1 (s)': t1, 'Mass (ton)': mass ,'Sa(T1) (g)': sat1/9.81, 'VE(T1) (m/s)': vet1, 'AvSa (g)': avsa/9.81,
-                                            'AvSv (m/s)': avsv, 'AvSd (m)': avsd, 'PGA (g)': pga, 'PGV (m/s)': pgv, 'PGD (m)': pgd, 'IC': ic, 'eff. Stiffness (kN/m^2)':keff,
-                                            'ult. Strength (kN)': vult}
-                                features_original = {'LBeam': lbeam, 'T1': t1, 'M': mass ,'SA_T1': sat1, 'VE_T1': vet1, 'AvSA': avsa, 'AvSV': avsv, 'AvSD': avsd, 'PGA': pga,
-                                                     'PGV': pgv, 'PGD': pgd, 'IC': ic, 'Ke_frame':keff, 'Vult_frame':vult}
-                                features_df = pd.DataFrame([features], index=['Value'])
-                                features_df2 = pd.DataFrame([features_original], index=['Value'])
+                                    features = {'Lbay (m)':lbeam, 'T1 (s)':t1, 'Mass (ton)':mass ,'Sa(T1) (g)':sat1/9.81, 'VE(T1) (m/s)':vet1,
+                                                'AvSa (g)':avsa/9.81, 'AvSv (m/s)':avsv, 'AvSd (m)':avsd, 'PGA (g)':pga, 'PGV (m/s)':pgv,
+                                                'PGD (m)':pgd, 'IC':ic, 'eff. Stiffness (kN/m^2)':keff, 'ult. Strength (kN)':vult}
+                                    features_original = {'LBeam':lbeam, 'T1':t1, 'M':mass ,'SA_T1':sat1, 'VE_T1':vet1, 'AvSA':avsa, 'AvSV':avsv,
+                                                         'AvSD':avsd, 'PGA':pga, 'PGV':pgv, 'PGD':pgd, 'IC':ic, 'Ke_frame':keff, 'Vult_frame':vult}
+                                    features_df = pd.DataFrame([features], index=['Value'])
+                                    features_df2 = pd.DataFrame([features_original], index=['Value'])
                             
-                                st.write('**<p style="font-size:17.5px; color:#02007c;">Features:</p>**', unsafe_allow_html=True)
-                                st.write(features_df)
-                                prediction = predict(model, features_df2)
-                                prediction = round(prediction,3)
-                                st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                return annotated_text("Based on the CatBoost model, **Base Shear Coefficient** of this frame is", (str(prediction), "", "#8ef"))
+                                    st.write('**<p style="font-size:17.5px; color:#02007c;">Features:</p>**', unsafe_allow_html=True)
+                                    st.write(features_df)
+                                    prediction = predict(model, features_df2)
+                                    prediction = round(prediction,3)
+                                    st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
+                                    return annotated_text("Based on the CatBoost model, **Base Shear Coefficient** of this frame is", (str(prediction), "", "#8ef"))
 
-                            if target_name =="Maximum Floor Acceleration (MFA)":
-                                model = load_model('LightGBM_MFA')
+                                if target_name =="Maximum Floor Acceleration (MFA)":
+                                    model = load_model('LightGBM_MFA')
 
-                                GM = gm.SeismoGM(dt = dt , acc = inp_acc , unit = 'g')
-                                GM.set_units(acc="g", vel="m", disp="m")
+                                    GM = gm.SeismoGM(dt = dt , acc = inp_acc , unit = 'g')
+                                    GM.set_units(acc="g", vel="m", disp="m")
 
-                                svt1 = SA(inp_acc, t1)[1]
-                                avsa = SA(inp_acc, t1)[4]
-                                avsv = SA(inp_acc, t1)[5]
-                                avsd = SA(inp_acc, t1)[6]
-                                pgv = GM.get_pgv()
-                                pgd = GM.get_pgd()
-                                accRMS = GM.get_rms()[0]
-                                ia = GM.get_ia()
-                                Significant_Duration = GM.get_t_5_95()[0]
-                                IF = (pgv**1.5)*((Significant_Duration)**0.5)
+                                    svt1 = SA(inp_acc, t1)[1]
+                                    avsa = SA(inp_acc, t1)[4]
+                                    avsv = SA(inp_acc, t1)[5]
+                                    avsd = SA(inp_acc, t1)[6]
+                                    pgv = GM.get_pgv()
+                                    pgd = GM.get_pgd()
+                                    accRMS = GM.get_rms()[0]
+                                    ia = GM.get_ia()
+                                    Significant_Duration = GM.get_t_5_95()[0]
+                                    IF = (pgv**1.5)*((Significant_Duration)**0.5)
 
-                                features = {'Lbay (m)':lbeam, 'T1 (s)':t1, 'Sv(T1) (m/s)':svt1, 'AvSa (g)':avsa/9.81, 'AvSv (m/s)':avsv, 'AvSd (m)':avsd, 'PGV (m/s)':pgv,
-                                             'PGD (m)':pgd, 'AccRMS (g)': accRMS, 'IA (m/s)':ia, 'I PGV-Δ':IF, 'ult. Strength (kN)': vult}
-                                features_original = {'LBeam':lbeam, 'T1':t1, 'SV_T1':svt1, 'AvSA':avsa, 'AvSV':avsv, 'AvSD':avsd, 'PGV':pgv, 'PGD':pgd, 'AccRMS': accRMS,
-                                                     'IA':ia, 'IF':IF, 'Vult_frame':vult}
-                                features_df = pd.DataFrame([features], index=['Value'])
-                                features_df2 = pd.DataFrame([features_original], index=['Value'])
+                                    features = {'Lbay (m)':lbeam, 'T1 (s)':t1, 'Sv(T1) (m/s)':svt1, 'AvSa (g)':avsa/9.81, 'AvSv (m/s)':avsv,
+                                                'AvSd (m)':avsd, 'PGV (m/s)':pgv, 'PGD (m)':pgd, 'AccRMS (g)':accRMS, 'IA (m/s)':ia, 'I PGV-Δ':IF,
+                                                'ult. Strength (kN)':vult}
+                                    features_original = {'LBeam':lbeam, 'T1':t1, 'SV_T1':svt1, 'AvSA':avsa, 'AvSV':avsv, 'AvSD':avsd, 'PGV':pgv,
+                                                         'PGD':pgd, 'AccRMS':accRMS, 'IA':ia, 'IF':IF, 'Vult_frame':vult}
+                                            
+                                    features_df = pd.DataFrame([features], index=['Value'])
+                                    features_df2 = pd.DataFrame([features_original], index=['Value'])
 
-                                st.write('**<p style="font-size:17.5px; color:#02007c;">Features:</p>**', unsafe_allow_html=True)
-                                st.write(features_df)
-                                prediction = predict(model, features_df2)
-                                prediction = round(prediction,3)
-                                st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
-                                return annotated_text("Based on the LightGBM model, **Maximum Floor Acceleration** of this frame is", (str(prediction)+str(' g'), "", "#8ef"))
+                                    st.write('**<p style="font-size:17.5px; color:#02007c;">Features:</p>**', unsafe_allow_html=True)
+                                    st.write(features_df)
+                                    prediction = predict(model, features_df2)
+                                    prediction = round(prediction,3)
+                                    st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
+                                    return annotated_text("Based on the LightGBM model, **Maximum Floor Acceleration** of this frame is", (str(prediction)+str(' g'), "", "#8ef"))
 
                         choose_target()
