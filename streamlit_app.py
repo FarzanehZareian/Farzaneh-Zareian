@@ -9,6 +9,7 @@ from PIL import Image
 import os
 import gmspy as gm
 from io import StringIO
+import joblib
 
 
 img = Image.open('steel_structure.jpg')
