@@ -1,5 +1,5 @@
 import streamlit as st
-# from pycaret.regression import load_model, predict_model
+from pycaret.regression import load_model, predict_model
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,227 +23,227 @@ hide_streamlit_style = """
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
-# def set_bg_hack(main_bg):
-#     '''
-#     A function to unpack an image from root folder and set as bg.
+def set_bg_hack(main_bg):
+    '''
+    A function to unpack an image from root folder and set as bg.
     
-#     Returns
-#     -------
-#     The background.
-#     '''
-#     main_bg_ext = "jpg"
+    Returns
+    -------
+    The background.
+    '''
+    main_bg_ext = "jpg"
         
-#     st.markdown(
-#          f"""
-#          <style>
-#          .stApp {{
-#              background: url(data:image/{main_bg_ext};base64,{base64.b64encode(open(main_bg, "rb").read()).decode()});
-#              background-size: cover}}
-#          </style>
-#          """,
-#          unsafe_allow_html=True)
+    st.markdown(
+         f"""
+         <style>
+         .stApp {{
+             background: url(data:image/{main_bg_ext};base64,{base64.b64encode(open(main_bg, "rb").read()).decode()});
+             background-size: cover}}
+         </style>
+         """,
+         unsafe_allow_html=True)
     
-# set_bg_hack('theme.jpg')
+set_bg_hack('theme.jpg')
 
-# st.markdown("""
-# <style>
-#     [data-testid=stSidebar] {
-#         background-color: white;
-#     }
-# </style>
-# """, unsafe_allow_html=True)
-
-
-# def processNGAfile(uploaded_file, scalefactor=None):
-#     '''
-#     This function process acceleration history for NGA data file (.AT2 format)
-#     to a single column value and return the total number of data points and 
-#     time iterval of the recording.
-#     Parameters:
-#     ------------
-#     filepath : string (location and name of the file)
-#     scalefactor : float (Optional) - multiplier factor that is applied to each
-#                   component in acceleration array.   
-#     Output:
-#     ------------
-#     desc: Description of the earthquake (e.g., name, year, etc)
-#     npts: total number of recorded points (acceleration data)
-#     dt: time interval of recorded points
-#     time: array (n x 1) - time array, same length with npts
-#     inp_acc: array (n x 1) - acceleration array, same length with time
-#              unit usually in (g) unless stated as other.
-#     '''    
-#     try:
-#         if not scalefactor:
-#             scalefactor = 1.0
-#         content = StringIO(uploaded_file.getvalue().decode("utf-8"))
-#         counter = 0
-#         desc, row4Val, acc_data = "","",[]
-#         for x in content:
-#             if counter == 1:
-#                 desc = x
-#             elif counter == 3:
-#                 row4Val = x
-#                 if row4Val[0][0] == 'N':
-#                     val = row4Val.split()
-#                     npts = float(val[(val.index('NPTS='))+1].rstrip(','))
-#                     dt = float(val[(val.index('DT='))+1])
-#                 else:
-#                     val = row4Val.split()
-#                     npts = float(val[0])
-#                     dt = float(val[1])
-#             elif counter > 3:
-#                 data = str(x).split()
-#                 for value in data:
-#                     a = float(value) * scalefactor
-#                     acc_data.append(a)
-#                 inp_acc = np.asarray(acc_data)
-#                 time = []
-#                 for i in range (0,len(acc_data)):
-#                     t = i * dt
-#                     time.append(t)
-#             counter = counter + 1
-#         return desc, npts, dt, time, inp_acc
-#     except IOError:
-#         print("processMotion FAILED!: File is not in the directory")
+st.markdown("""
+<style>
+    [data-testid=stSidebar] {
+        background-color: white;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 
-# def predict(model, df):    
-#     predictions_data = predict_model(estimator = model, data = df)
-#     return predictions_data['prediction_label'][0]
+def processNGAfile(uploaded_file, scalefactor=None):
+    '''
+    This function process acceleration history for NGA data file (.AT2 format)
+    to a single column value and return the total number of data points and 
+    time iterval of the recording.
+    Parameters:
+    ------------
+    filepath : string (location and name of the file)
+    scalefactor : float (Optional) - multiplier factor that is applied to each
+                  component in acceleration array.   
+    Output:
+    ------------
+    desc: Description of the earthquake (e.g., name, year, etc)
+    npts: total number of recorded points (acceleration data)
+    dt: time interval of recorded points
+    time: array (n x 1) - time array, same length with npts
+    inp_acc: array (n x 1) - acceleration array, same length with time
+             unit usually in (g) unless stated as other.
+    '''    
+    try:
+        if not scalefactor:
+            scalefactor = 1.0
+        content = StringIO(uploaded_file.getvalue().decode("utf-8"))
+        counter = 0
+        desc, row4Val, acc_data = "","",[]
+        for x in content:
+            if counter == 1:
+                desc = x
+            elif counter == 3:
+                row4Val = x
+                if row4Val[0][0] == 'N':
+                    val = row4Val.split()
+                    npts = float(val[(val.index('NPTS='))+1].rstrip(','))
+                    dt = float(val[(val.index('DT='))+1])
+                else:
+                    val = row4Val.split()
+                    npts = float(val[0])
+                    dt = float(val[1])
+            elif counter > 3:
+                data = str(x).split()
+                for value in data:
+                    a = float(value) * scalefactor
+                    acc_data.append(a)
+                inp_acc = np.asarray(acc_data)
+                time = []
+                for i in range (0,len(acc_data)):
+                    t = i * dt
+                    time.append(t)
+            counter = counter + 1
+        return desc, npts, dt, time, inp_acc
+    except IOError:
+        print("processMotion FAILED!: File is not in the directory")
 
-# def find_nearest(array, value):
-#     array = np.asarray(array)
-#     idx = (np.abs(array - value)).argmin()
-#     return array[idx]
+
+def predict(model, df):    
+    predictions_data = predict_model(estimator = model, data = df)
+    return predictions_data['prediction_label'][0]
+
+def find_nearest(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
     
-# def SA(acc_rec, T1):
-#     T = np.arange(.01, 6, .01)    
-#     w = 2*np.pi/T 
-#     mass = 1 
-#     xi = 0.05 
-#     c = 2*xi*w*mass
-#     wd = w*np.sqrt(1-xi**2)
-#     p1 = -mass*acc_rec*9.81
+def SA(acc_rec, T1):
+    T = np.arange(.01, 6, .01)    
+    w = 2*np.pi/T 
+    mass = 1 
+    xi = 0.05 
+    c = 2*xi*w*mass
+    wd = w*np.sqrt(1-xi**2)
+    p1 = -mass*acc_rec*9.81
     
-#     Equivalent_Velocity = np.array([])
-#     SA = np.zeros(len(T))
-#     SV = np.zeros(len(T))
-#     SD = np.zeros(len(T))
+    Equivalent_Velocity = np.array([])
+    SA = np.zeros(len(T))
+    SV = np.zeros(len(T))
+    SD = np.zeros(len(T))
     
-#     for j in np.arange(len(T)):
-#         I0 = 1/w[j]**2*(1-np.exp(-xi*w[j]*dt)*(xi*w[j]/wd[j]*np.sin(wd[j]*dt)+np.cos(wd[j]*dt)))
-#         J0 = 1/w[j]**2*(xi*w[j]+np.exp(-xi*w[j]*dt)*(-xi*w[j]*np.cos(wd[j]*dt)+wd[j]*np.sin(wd[j]*dt)))
-#         AA = [[np.exp(-xi*w[j]*dt)*(np.cos(wd[j]*dt)+xi*w[j]/wd[j]*np.sin(wd[j]*dt)), np.exp(-xi*w[j]*dt)*np.sin(wd[j]*dt)/wd[j]], 
-#                [-w[j]**2*np.exp(-xi*w[j]*dt)*np.sin(wd[j]*dt)/wd[j], np.exp(-xi*w[j]*dt)*(np.cos(wd[j]*dt)-xi*w[j]/wd[j]*np.sin(wd[j]*dt))]]
-#         BB = [[I0*(1+xi/w[j]/dt)+J0/w[j]**2/dt-1/w[j]**2, -xi/w[j]/dt*I0-J0/w[j]**2/dt+1/w[j]**2 ], [J0-(xi*w[j]+1/dt)*I0, I0/dt]]
+    for j in np.arange(len(T)):
+        I0 = 1/w[j]**2*(1-np.exp(-xi*w[j]*dt)*(xi*w[j]/wd[j]*np.sin(wd[j]*dt)+np.cos(wd[j]*dt)))
+        J0 = 1/w[j]**2*(xi*w[j]+np.exp(-xi*w[j]*dt)*(-xi*w[j]*np.cos(wd[j]*dt)+wd[j]*np.sin(wd[j]*dt)))
+        AA = [[np.exp(-xi*w[j]*dt)*(np.cos(wd[j]*dt)+xi*w[j]/wd[j]*np.sin(wd[j]*dt)), np.exp(-xi*w[j]*dt)*np.sin(wd[j]*dt)/wd[j]], 
+               [-w[j]**2*np.exp(-xi*w[j]*dt)*np.sin(wd[j]*dt)/wd[j], np.exp(-xi*w[j]*dt)*(np.cos(wd[j]*dt)-xi*w[j]/wd[j]*np.sin(wd[j]*dt))]]
+        BB = [[I0*(1+xi/w[j]/dt)+J0/w[j]**2/dt-1/w[j]**2, -xi/w[j]/dt*I0-J0/w[j]**2/dt+1/w[j]**2 ], [J0-(xi*w[j]+1/dt)*I0, I0/dt]]
         
-#         u1 = np.zeros(len(acc_rec))
-#         udre1 = np.zeros(len(acc_rec))
-#         for by in range(1,len(acc_rec),1) :    
-#             u1[by] = AA[0][0]*u1[by-1] + AA[0][1]*udre1[by-1] + BB[0][0]*p1[by-1] + BB[0][1]*p1[by]
-#             udre1[by] = AA[1][0]*u1[by-1]+AA[1][1]*udre1[by-1] + BB[1][0]*p1[by-1]+BB[1][1]*p1[by]           
-#         udd1 = -(w[j]**2*u1+c[j]*udre1)-acc_rec*9.81
+        u1 = np.zeros(len(acc_rec))
+        udre1 = np.zeros(len(acc_rec))
+        for by in range(1,len(acc_rec),1) :    
+            u1[by] = AA[0][0]*u1[by-1] + AA[0][1]*udre1[by-1] + BB[0][0]*p1[by-1] + BB[0][1]*p1[by]
+            udre1[by] = AA[1][0]*u1[by-1]+AA[1][1]*udre1[by-1] + BB[1][0]*p1[by-1]+BB[1][1]*p1[by]           
+        udd1 = -(w[j]**2*u1+c[j]*udre1)-acc_rec*9.81
         
-#         SA[j] = np.max(np.abs(udd1+acc_rec*9.81))
-#         SV[j] = np.max(np.abs(udre1))
-#         SD[j] = np.max(np.abs(u1)) 
+        SA[j] = np.max(np.abs(udd1+acc_rec*9.81))
+        SV[j] = np.max(np.abs(udre1))
+        SD[j] = np.max(np.abs(u1)) 
 
-#         E_I = 0
-#         EI =[]            
-#         for qr in range(len(acc_rec)):
-#             dE_I = -(acc_rec[qr]*udre1[qr]*9.81*dt)
-#             E_I = E_I + dE_I
-#             EI.append(E_I)        
-#         VE = (2*E_I)**0.5
-#         Equivalent_Velocity = np.append(Equivalent_Velocity, VE)  
+        E_I = 0
+        EI =[]            
+        for qr in range(len(acc_rec)):
+            dE_I = -(acc_rec[qr]*udre1[qr]*9.81*dt)
+            E_I = E_I + dE_I
+            EI.append(E_I)        
+        VE = (2*E_I)**0.5
+        Equivalent_Velocity = np.append(Equivalent_Velocity, VE)  
         
-#     T_near_T1 = find_nearest(T, T1)
-#     T_num = np.where(T == T_near_T1) 
+    T_near_T1 = find_nearest(T, T1)
+    T_num = np.where(T == T_near_T1) 
     
-#     SA_T1 = SA[T_num][0]
-#     SV_T1 = SV[T_num][0]
-#     SD_T1 = SD[T_num][0]
-#     VE_T1 = Equivalent_Velocity[T_num][0]
+    SA_T1 = SA[T_num][0]
+    SV_T1 = SV[T_num][0]
+    SD_T1 = SD[T_num][0]
+    VE_T1 = Equivalent_Velocity[T_num][0]
 
-#     Tinit = find_nearest(T, 0.1*T1)
-#     Tfin = find_nearest(T, 1.8*T1)
-#     nT = (Tfin - Tinit)/0.01 + 1
-#     num_init = np.where(T == Tinit)[0][0]
-#     num_fin = np.where(T == Tfin)[0][0] 
+    Tinit = find_nearest(T, 0.1*T1)
+    Tfin = find_nearest(T, 1.8*T1)
+    nT = (Tfin - Tinit)/0.01 + 1
+    num_init = np.where(T == Tinit)[0][0]
+    num_fin = np.where(T == Tfin)[0][0] 
     
-#     sumSA = 0
-#     for dw in SA[num_init:num_fin+1]:
-#         sumSA = sumSA + dw
-#     AvSA = sumSA/nT 
+    sumSA = 0
+    for dw in SA[num_init:num_fin+1]:
+        sumSA = sumSA + dw
+    AvSA = sumSA/nT 
 
-#     sumSV = 0
-#     for ev in SV[num_init:num_fin+1]:
-#         sumSV = sumSV + ev
-#     AvSV = sumSV/nT 
+    sumSV = 0
+    for ev in SV[num_init:num_fin+1]:
+        sumSV = sumSV + ev
+    AvSV = sumSV/nT 
 
-#     sumSD = 0
-#     for fu in SD[num_init:num_fin+1]:
-#         sumSD = sumSD + fu
-#     AvSD = sumSD/nT 
+    sumSD = 0
+    for fu in SD[num_init:num_fin+1]:
+        sumSD = sumSD + fu
+    AvSD = sumSD/nT 
 
-#     sumVE = 0
-#     for cx in Equivalent_Velocity[num_init:num_fin+1]:
-#         sumVE = sumVE + cx
-#     AvVE = sumVE/nT
+    sumVE = 0
+    for cx in Equivalent_Velocity[num_init:num_fin+1]:
+        sumVE = sumVE + cx
+    AvVE = sumVE/nT
 
-#     return SA_T1, SV_T1, SD_T1, VE_T1, AvSA, AvSV, AvSD, AvVE
+    return SA_T1, SV_T1, SD_T1, VE_T1, AvSA, AvSV, AvSD, AvVE
 
 
-# st.markdown('***<p style="font-size:26px; color:green;">Prediction of Peak Dynamic Responses of 2D Steel Moment Frames Subjected to Earthquake Ground Motion Records</p>***', unsafe_allow_html=True)
-# st.sidebar.write('***<p style="color:red;">Acceleration Time History</p>***', unsafe_allow_html=True)
-# uploaded_file = st.sidebar.file_uploader('**Please upload an acceleration time history from the PEER NGA database.**')
-# if uploaded_file is not None:
+st.markdown('***<p style="font-size:26px; color:green;">Prediction of Peak Dynamic Responses of 2D Steel Moment Frames Subjected to Earthquake Ground Motion Records</p>***', unsafe_allow_html=True)
+st.sidebar.write('***<p style="color:red;">Acceleration Time History</p>***', unsafe_allow_html=True)
+uploaded_file = st.sidebar.file_uploader('**Please upload an acceleration time history from the PEER NGA database.**')
+if uploaded_file is not None:
 
-#     sf =st.sidebar.number_input('**Enter a scale factor for the earthquake:**')
-#     if sf:
-#         desc, npts, dt, rec_time, inp_acc = processNGAfile(uploaded_file, scalefactor=sf)
-#         st.write("###")
-#         st.write('*Description of the earthquake*: ',desc)
-#         st.write("*Total number of points*: ", str(int(npts)))
-#         st.write('*Time interval*: ',str(dt), 'sec')
-#         st.write('*Single-column acceleration data*:')
+    sf =st.sidebar.number_input('**Enter a scale factor for the earthquake:**')
+    if sf:
+        desc, npts, dt, rec_time, inp_acc = processNGAfile(uploaded_file, scalefactor=sf)
+        st.write("###")
+        st.write('*Description of the earthquake*: ',desc)
+        st.write("*Total number of points*: ", str(int(npts)))
+        st.write('*Time interval*: ',str(dt), 'sec')
+        st.write('*Single-column acceleration data*:')
 
-#         d = {'Time': rec_time, 'Accel.': inp_acc}
-#         df_acc =  pd.DataFrame(data=d).T
-#         st.write(df_acc)
-#         st.write('*Acceleration time-history graph*:')
-#         fig = plt.figure(figsize=(8.3,2.3))
-#         plt.plot(df_acc.T.iloc[:,0], df_acc.T.iloc[:,1], linewidth=1.1, c='lightseagreen')
-#         plt.xticks(np.arange(0, df_acc.T.iloc[-1,0]+1, 5))
-#         plt.xlabel('Time (sec)', fontsize=11)
-#         plt.ylabel('Acceleration (g)', fontsize=11)
-#         plt.grid(color='lightgrey', linestyle='-', linewidth=0.4)
-#         st.pyplot(fig)
+        d = {'Time': rec_time, 'Accel.': inp_acc}
+        df_acc =  pd.DataFrame(data=d).T
+        st.write(df_acc)
+        st.write('*Acceleration time-history graph*:')
+        fig = plt.figure(figsize=(8.3,2.3))
+        plt.plot(df_acc.T.iloc[:,0], df_acc.T.iloc[:,1], linewidth=1.1, c='lightseagreen')
+        plt.xticks(np.arange(0, df_acc.T.iloc[-1,0]+1, 5))
+        plt.xlabel('Time (sec)', fontsize=11)
+        plt.ylabel('Acceleration (g)', fontsize=11)
+        plt.grid(color='lightgrey', linestyle='-', linewidth=0.4)
+        st.pyplot(fig)
 
-#         check = st.checkbox('Agree')
-#         if check:
-#             st.sidebar.write("####")
-#             st.sidebar.write('***<p style="color:red;">Structural Properties of the Steel Frame</p>***', unsafe_allow_html=True)
-#             nst = st.sidebar.slider(label = 'Number of stories', min_value = 3, max_value = 13 , value = 8, step = 1)
-#             nbay = st.sidebar.slider(label = 'Number of bays', min_value = 2, max_value = 5 , value = 3, step = 1)
-#             lcol = st.sidebar.slider(label = 'Height of the stories (m)', min_value = 3.0, max_value = 4.0 , value = 3.2, step = 0.1)
-#             lbeam = st.sidebar.slider(label = 'Length of the bays (m)', min_value = 4.0, max_value = 7.0 , value = 6.0, step = 0.1)
-#             t1 = st.sidebar.number_input('Fundamental period T1 (sec)', value=1.16)
-#             mass = st.sidebar.number_input('Total mass (ton)', value=563.67)
-#             keff = st.sidebar.number_input('Effective stiffness (kN/$m^2$)', value=9407.64)
-#             vult = st.sidebar.number_input('Ultimate strength (kN)', value=2046.71)
+        check = st.checkbox('Agree')
+        if check:
+            st.sidebar.write("####")
+            st.sidebar.write('***<p style="color:red;">Structural Properties of the Steel Frame</p>***', unsafe_allow_html=True)
+            nst = st.sidebar.slider(label = 'Number of stories', min_value = 3, max_value = 13 , value = 8, step = 1)
+            nbay = st.sidebar.slider(label = 'Number of bays', min_value = 2, max_value = 5 , value = 3, step = 1)
+            lcol = st.sidebar.slider(label = 'Height of the stories (m)', min_value = 3.0, max_value = 4.0 , value = 3.2, step = 0.1)
+            lbeam = st.sidebar.slider(label = 'Length of the bays (m)', min_value = 4.0, max_value = 7.0 , value = 6.0, step = 0.1)
+            t1 = st.sidebar.number_input('Fundamental period T1 (sec)', value=1.16)
+            mass = st.sidebar.number_input('Total mass (ton)', value=563.67)
+            keff = st.sidebar.number_input('Effective stiffness (kN/$m^2$)', value=9407.64)
+            vult = st.sidebar.number_input('Ultimate strength (kN)', value=2046.71)
 
-#             check2 = st.sidebar.checkbox('Submit')
-#             if check2:
-#                 st.write("###")
-#                 st.markdown('**<p style="font-size:20px; color:red;">OUTPUT:</p>**', unsafe_allow_html=True)
-#                 with st.form("my_form"):
-#                     target_name = st.selectbox("**Select your TARGET**", ("None","Maximum Global Drift Ratio (MGDR)", "Maximum Interstory Drift Ratio (MIDR)",
-#                                                                           "Base Shear Coefficient (BSC)", "Maximum Floor Acceleration (MFA)")) 
+            check2 = st.sidebar.checkbox('Submit')
+            if check2:
+                st.write("###")
+                st.markdown('**<p style="font-size:20px; color:red;">OUTPUT:</p>**', unsafe_allow_html=True)
+                with st.form("my_form"):
+                    target_name = st.selectbox("**Select your TARGET**", ("None","Maximum Global Drift Ratio (MGDR)", "Maximum Interstory Drift Ratio (MIDR)",
+                                                                          "Base Shear Coefficient (BSC)", "Maximum Floor Acceleration (MFA)")) 
                 
-#                     submitted = st.form_submit_button("Calculate")
-#                     if submitted:
+                    submitted = st.form_submit_button("Calculate")
+                    if submitted:
                         # def choose_target():
                         #     with st.spinner(text="Operation in progress. Please wait..."):
                         #         if target_name =="Maximum Global Drift Ratio (MGDR)":
