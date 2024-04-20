@@ -1,5 +1,5 @@
 import streamlit as st
-# from pycaret.regression import load_model, predict_model
+from pycaret.regression import load_model, predict_model
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,8 +9,6 @@ from PIL import Image
 import os
 import gmspy as gm
 from io import StringIO
-# import joblib
-
 
 img = Image.open('steel_structure.jpg')
 st.set_page_config(page_title="Peak Dynamic Responses of Steel Moment Frames", page_icon = img)
