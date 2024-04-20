@@ -243,7 +243,7 @@ if uploaded_file is not None:
                                                                           "Base Shear Coefficient (BSC)", "Maximum Floor Acceleration (MFA)")) 
                 
                     submitted = st.form_submit_button("Calculate")
-                    if submitted:
+                    # if submitted:
                         # def choose_target():
                         #     with st.spinner(text="Operation in progress. Please wait..."):
                         #         if target_name =="Maximum Global Drift Ratio (MGDR)":
