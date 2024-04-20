@@ -375,4 +375,4 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
                                 #     st.write('**<p style="font-size:17.5px; color:#02007c;">Target:</p>**', unsafe_allow_html=True)
                                 #     return annotated_text("Based on the LightGBM model, the estimated **maximum floor acceleration** of this frame is", (str(prediction)+str(' g'), "", "#8ef"))
 
-                        choose_target()
+                        # choose_target()
