@@ -1,5 +1,5 @@
 pycaret
 gmspy==0.0.4
-st-annotated-text==4.0.1
+st-annotated-text
 matplotlib==3.6.0
 catboost==1.2.2
